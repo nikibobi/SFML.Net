@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -12,6 +13,9 @@ namespace SFML
         /// This class defines a view (position, size, etc.) ;
         /// you can consider it as a 2D camera
         /// </summary>
+        /// <remarks>
+        /// See also the note on coordinates and undistorted rendering in SFML.Graphics.Transformable.
+        /// </remarks>
         ////////////////////////////////////////////////////////////
         public class View : ObjectBase
         {

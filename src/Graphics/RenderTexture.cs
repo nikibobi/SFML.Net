@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -76,7 +77,7 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public View DefaultView
             {
-                get {return myDefaultView;}
+                get { return new View(myDefaultView); }
             }
 
             ////////////////////////////////////////////////////////////

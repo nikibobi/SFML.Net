@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -79,12 +80,15 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
-            /// Get a point of the shape.
+            /// Get the position of a point
             ///
+            /// The returned point is in local coordinates, that is,
+            /// the shape's transforms (position, rotation, scale) are
+            /// not taken into account.
             /// The result is undefined if index is out of the valid range.
             /// </summary>
             /// <param name="index">Index of the point to get, in range [0 .. PointCount - 1]</param>
-            /// <returns>Index-th point of the shape</returns>
+            /// <returns>index-th point of the shape</returns>
             ////////////////////////////////////////////////////////////
             public abstract Vector2f GetPoint(uint index);
 
@@ -126,11 +130,7 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summmary>
-            /// Draw the object to a render target
-            ///
-            /// This is a pure virtual function that has to be implemented
-            /// by the derived class to define how the drawable should be
-            /// drawn.
+            /// Draw the shape to a render target
             /// </summmary>
             /// <param name="target">Render target to draw to</param>
             /// <param name="states">Current render states</param>

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SFML
 {
-    namespace Window
+    namespace System
     {
         ////////////////////////////////////////////////////////////
         /// <summary>
@@ -12,7 +12,7 @@ namespace SFML
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
-        public struct Vector2f
+        public struct Vector2f : IEquatable<Vector2f>
         {
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -110,11 +110,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 == v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator ==(Vector2f v1, Vector2f v2)
             {
-                return v1.X == v2.X && v1.Y == v2.Y;
+                return v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -123,11 +123,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 != v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator !=(Vector2f v1, Vector2f v2)
             {
-                return !(v1 == v2);
+                return !v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -141,6 +141,67 @@ namespace SFML
                 return "[Vector2f]" +
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare vector and object and checks if they are equal
+            /// </summary>
+            /// <param name="obj">Object to check</param>
+            /// <returns>Object and vector are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool Equals(object obj)
+            {
+                return (obj is Vector2f) && obj.Equals(this);
+            }
+            
+            ///////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare two vectors and checks if they are equal
+            /// </summary>
+            /// <param name="other">Vector to check</param>
+            /// <returns>Vectors are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public bool Equals(Vector2f other)
+            {
+                return (X == other.X) &&
+                       (Y == other.Y);
+            }
+            
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Provide a integer describing the object
+            /// </summary>
+            /// <returns>Integer description of the object</returns>
+            ////////////////////////////////////////////////////////////
+            public override int GetHashCode()
+            {
+                return X.GetHashCode() ^
+                       Y.GetHashCode();
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2i(Vector2f v)
+            {
+                return new Vector2i((int)v.X, (int)v.Y);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2u(Vector2f v)
+            {
+                return new Vector2u((uint)v.X, (uint)v.Y);
             }
 
             /// <summary>X (horizontal) component of the vector</summary>
@@ -157,7 +218,7 @@ namespace SFML
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
-        public struct Vector2i
+        public struct Vector2i : IEquatable<Vector2i>
         {
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -255,11 +316,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 == v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator ==(Vector2i v1, Vector2i v2)
             {
-                return v1.X == v2.X && v1.Y == v2.Y;
+                return v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -268,11 +329,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 != v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator !=(Vector2i v1, Vector2i v2)
             {
-                return !(v1 == v2);
+                return !v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -286,6 +347,67 @@ namespace SFML
                 return "[Vector2i]" +
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare vector and object and checks if they are equal
+            /// </summary>
+            /// <param name="obj">Object to check</param>
+            /// <returns>Object and vector are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool Equals(object obj)
+            {
+                return (obj is Vector2i) && obj.Equals(this);
+            }
+            
+            ///////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare two vectors and checks if they are equal
+            /// </summary>
+            /// <param name="other">Vector to check</param>
+            /// <returns>Vectors are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public bool Equals(Vector2i other)
+            {
+                return (X == other.X) &&
+                       (Y == other.Y);
+            }
+            
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Provide a integer describing the object
+            /// </summary>
+            /// <returns>Integer description of the object</returns>
+            ////////////////////////////////////////////////////////////
+            public override int GetHashCode()
+            {
+                return X.GetHashCode() ^
+                       Y.GetHashCode();
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2f(Vector2i v)
+            {
+                return new Vector2f((float)v.X, (float)v.Y);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2u(Vector2i v)
+            {
+                return new Vector2u((uint)v.X, (uint)v.Y);
             }
 
             /// <summary>X (horizontal) component of the vector</summary>
@@ -302,7 +424,7 @@ namespace SFML
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
-        public struct Vector2u
+        public struct Vector2u : IEquatable<Vector2u>
         {
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -388,11 +510,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 == v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator ==(Vector2u v1, Vector2u v2)
             {
-                return v1.X == v2.X && v1.Y == v2.Y;
+                return v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -401,11 +523,11 @@ namespace SFML
             /// </summary>
             /// <param name="v1">First vector</param>
             /// <param name="v2">Second vector</param>
-            /// <returns>v1 + v2</returns>
+            /// <returns>v1 != v2</returns>
             ////////////////////////////////////////////////////////////
             public static bool operator !=(Vector2u v1, Vector2u v2)
             {
-                return !(v1 == v2);
+                return !v1.Equals(v2);
             }
 
             ////////////////////////////////////////////////////////////
@@ -419,6 +541,67 @@ namespace SFML
                 return "[Vector2u]" +
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare vector and object and checks if they are equal
+            /// </summary>
+            /// <param name="obj">Object to check</param>
+            /// <returns>Object and vector are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool Equals(object obj)
+            {
+                return (obj is Vector2u) && obj.Equals(this);
+            }
+            
+            ///////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare two vectors and checks if they are equal
+            /// </summary>
+            /// <param name="other">Vector to check</param>
+            /// <returns>Vectors are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public bool Equals(Vector2u other)
+            {
+                return (X == other.X) &&
+                       (Y == other.Y);
+            }
+            
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Provide a integer describing the object
+            /// </summary>
+            /// <returns>Integer description of the object</returns>
+            ////////////////////////////////////////////////////////////
+            public override int GetHashCode()
+            {
+                return X.GetHashCode() ^
+                       Y.GetHashCode();
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2i(Vector2u v)
+            {
+                return new Vector2i((int)v.X, (int)v.Y);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another vector type
+            /// </summary>
+            /// <param name="v">Vector being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator Vector2f(Vector2u v)
+            {
+                return new Vector2f((float)v.X, (float)v.Y);
             }
 
             /// <summary>X (horizontal) component of the vector</summary>

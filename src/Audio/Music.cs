@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.IO;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -41,6 +42,29 @@ namespace SFML
                 myStream = new StreamAdaptor(stream);
                 SetThis(sfMusic_createFromStream(myStream.InputStreamPtr));
 
+                if (CPointer == IntPtr.Zero)
+                    throw new LoadingFailedException("music");
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Construct the music and load it from a file in memory
+            /// </summary>
+            /// <param name="bytes">Byte array containing the file contents</param>
+            /// <exception cref="LoadingFailedException" />
+            ////////////////////////////////////////////////////////////
+            public Music(byte[] bytes) : 
+                base(IntPtr.Zero)
+            {
+                GCHandle pin = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                try 
+                {
+                    SetThis(sfMusic_createFromMemory(pin.AddrOfPinnedObject(), Convert.ToUInt64(bytes.Length)));
+                } 
+                finally 
+                {
+                    pin.Free();
+                }
                 if (CPointer == IntPtr.Zero)
                     throw new LoadingFailedException("music");
             }
@@ -269,6 +293,9 @@ namespace SFML
 
             [DllImport("csfml-audio-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             unsafe static extern IntPtr sfMusic_createFromStream(IntPtr stream);
+
+            [DllImport("csfml-audio-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern IntPtr sfMusic_createFromMemory(IntPtr data, ulong size);
 
             [DllImport("csfml-audio-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern void sfMusic_destroy(IntPtr MusicStream);

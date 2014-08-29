@@ -23,7 +23,7 @@
     <OutputPath>..\..\lib\x86\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\doc\build\audio-doc.xml</DocumentationFile>
+    <DocumentationFile>..\..\doc\build\sfmlnet-audio-2.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -32,7 +32,7 @@
     <OutputPath>..\..\lib\x86\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\doc\build\audio-doc.xml</DocumentationFile>
+    <DocumentationFile>..\..\doc\build\sfmlnet-audio-2.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -43,7 +43,7 @@
     <OutputPath>..\..\lib\x64\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\doc\build\audio-doc.xml</DocumentationFile>
+    <DocumentationFile>..\..\doc\build\sfmlnet-audio-2.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -52,7 +52,7 @@
     <OutputPath>..\..\lib\x64\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\doc\build\audio-doc.xml</DocumentationFile>
+    <DocumentationFile>..\..\doc\build\sfmlnet-audio-2.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -69,20 +69,24 @@
   <ItemGroup>
     <Compile Include="Listener.cs" />
     <Compile Include="Music.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sound.cs" />
     <Compile Include="SoundBuffer.cs" />
     <Compile Include="SoundBufferRecorder.cs" />
     <Compile Include="SoundRecorder.cs" />
     <Compile Include="SoundStream.cs" />
-    <Compile Include="Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\System\sfml-system.csproj">
+      <Project>{31D24303-F6A9-4D53-BB03-A73EDCB3186D}</Project>
+      <Name>sfml-system</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Window\sfml-window.csproj">
       <Project>{D17DE83D-A592-461F-8AF2-53F9E22E1D0F}</Project>
       <Name>sfml-window</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <Reference Include="System" />
   </ItemGroup>
 </Project>

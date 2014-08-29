@@ -156,20 +156,15 @@ namespace SFML
             /// This function returns the axis-aligned rectangle that
             /// contains all the vertices of the array.
             /// </summmary>
-            /// <returns>Bounding rectangle of the vertex array</returns>
             ////////////////////////////////////////////////////////////
-            public FloatRect GetBounds()
+            public FloatRect Bounds
             {
-                return sfVertexArray_getBounds(CPointer);
+                get { return sfVertexArray_getBounds(CPointer); }
             }
 
             ////////////////////////////////////////////////////////////
             /// <summmary>
-            /// Draw the object to a render target
-            ///
-            /// This is a pure virtual function that has to be implemented
-            /// by the derived class to define how the drawable should be
-            /// drawn.
+            /// Draw the vertex array to a render target
             /// </summmary>
             /// <param name="target">Render target to draw to</param>
             /// <param name="states">Current render states</param>

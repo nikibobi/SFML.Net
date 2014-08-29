@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using SFML.System;
 
 namespace SFML
 {
@@ -12,7 +13,7 @@ namespace SFML
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
-        public struct IntRect
+        public struct IntRect : IEquatable<IntRect>
         {
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -33,6 +34,18 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
+            /// Construct the rectangle from position and size
+            /// </summary>
+            /// <param name="position">Position of the top-left corner of the rectangle</param>
+            /// <param name="size">Size of the rectangle</param>
+            ////////////////////////////////////////////////////////////
+            public IntRect(Vector2i position, Vector2i size)
+                : this(position.X, position.Y, size.X, size.Y)
+            {
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
             /// Check if a point is inside the rectangle's area
             /// </summary>
             /// <param name="x">X coordinate of the point to test</param>
@@ -41,7 +54,12 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Contains(int x, int y)
             {
-                return (x >= Left) && (x < Left + Width) && (y >= Top) && (y < Top + Height);
+                int minX = Math.Min(Left, Left + Width);
+                int maxX = Math.Max(Left, Left + Width);
+                int minY = Math.Min(Top, Top + Height);
+                int maxY = Math.Max(Top, Top + Height);
+
+                return (x >= minX) && (x < maxX) && (y >= minY) && (y < maxY);
             }
 
             ////////////////////////////////////////////////////////////
@@ -53,13 +71,8 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Intersects(IntRect rect)
             {
-                // Compute the intersection boundaries
-                int left   = Math.Max(Left,         rect.Left);
-                int top    = Math.Max(Top,          rect.Top);
-                int right  = Math.Min(Left + Width, rect.Left + rect.Width);
-                int bottom = Math.Min(Top + Height, rect.Top + rect.Height);
-            
-                return (left < right) && (top < bottom);
+                IntRect overlap;
+                return Intersects(rect, out overlap);
             }
 
             ////////////////////////////////////////////////////////////
@@ -72,19 +85,33 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Intersects(IntRect rect, out IntRect overlap)
             {
+                // Rectangles with negative dimensions are allowed, so we must handle them correctly
+
+                // Compute the min and max of the first rectangle on both axes
+                int r1MinX = Math.Min(Left, Left + Width);
+                int r1MaxX = Math.Max(Left, Left + Width);
+                int r1MinY = Math.Min(Top, Top + Height);
+                int r1MaxY = Math.Max(Top, Top + Height);
+
+                // Compute the min and max of the second rectangle on both axes
+                int r2MinX = Math.Min(rect.Left, rect.Left + rect.Width);
+                int r2MaxX = Math.Max(rect.Left, rect.Left + rect.Width);
+                int r2MinY = Math.Min(rect.Top, rect.Top + rect.Height);
+                int r2MaxY = Math.Max(rect.Top, rect.Top + rect.Height);
+
                 // Compute the intersection boundaries
-                int left   = Math.Max(Left,         rect.Left);
-                int top    = Math.Max(Top,          rect.Top);
-                int right  = Math.Min(Left + Width, rect.Left + rect.Width);
-                int bottom = Math.Min(Top + Height, rect.Top + rect.Height);
+                int interLeft = Math.Max(r1MinX, r2MinX);
+                int interTop = Math.Max(r1MinY, r2MinY);
+                int interRight = Math.Min(r1MaxX, r2MaxX);
+                int interBottom = Math.Min(r1MaxY, r2MaxY);
 
                 // If the intersection is valid (positive non zero area), then there is an intersection
-                if ((left < right) && (top < bottom))
+                if ((interLeft < interRight) && (interTop < interBottom))
                 {
-                    overlap.Left   = left;
-                    overlap.Top    = top;
-                    overlap.Width  = right - left;
-                    overlap.Height = bottom - top;
+                    overlap.Left   = interLeft;
+                    overlap.Top    = interTop;
+                    overlap.Width  = interRight - interLeft;
+                    overlap.Height = interBottom - interTop;
                     return true;
                 }
                 else
@@ -111,6 +138,88 @@ namespace SFML
                        " Width(" + Width + ")" +
                        " Height(" + Height + ")";
             }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare rectangle and object and checks if they are equal
+            /// </summary>
+            /// <param name="obj">Object to check</param>
+            /// <returns>Object and rectangle are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool Equals(object obj)
+            {
+                return (obj is IntRect) && obj.Equals(this);
+            }
+            
+            ///////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare two rectangles and checks if they are equal
+            /// </summary>
+            /// <param name="other">Rectangle to check</param>
+            /// <returns>Rectangles are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public bool Equals(IntRect other)
+            {
+                return (Left == other.Left) &&
+                       (Top == other.Top) &&
+                       (Width == other.Width) &&
+                       (Height == other.Height);
+            }
+            
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Provide a integer describing the object
+            /// </summary>
+            /// <returns>Integer description of the object</returns>
+            ////////////////////////////////////////////////////////////
+            public override int GetHashCode()
+            {
+                return unchecked((int)((uint)Left ^
+                       (((uint)Top << 13) | ((uint)Top >> 19)) ^
+                       (((uint)Width << 26) | ((uint)Width >>  6)) ^
+                       (((uint)Height <<  7) | ((uint)Height >> 25))));
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Operator == overload ; check rect equality
+            /// </summary>
+            /// <param name="r1">First rect</param>
+            /// <param name="r2">Second rect</param>
+            /// <returns>r1 == r2</returns>
+            ////////////////////////////////////////////////////////////
+            public static bool operator ==(IntRect r1, IntRect r2)
+            {
+                return r1.Equals(r2);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Operator != overload ; check rect inequality
+            /// </summary>
+            /// <param name="r1">First rect</param>
+            /// <param name="r2">Second rect</param>
+            /// <returns>r1 != r2</returns>
+            ////////////////////////////////////////////////////////////
+            public static bool operator !=(IntRect r1, IntRect r2)
+            {
+                return !r1.Equals(r2);
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another rectangle type
+            /// </summary>
+            /// <param name="r">Rectangle being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator FloatRect(IntRect r)
+            {
+                return new FloatRect((float)r.Left,
+                                     (float)r.Top,
+                                     (float)r.Width,
+                                     (float)r.Height);
+            }
 
             /// <summary>Left coordinate of the rectangle</summary>
             public int Left;
@@ -131,7 +240,7 @@ namespace SFML
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
-        public struct FloatRect
+        public struct FloatRect : IEquatable<FloatRect>
         {
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -152,6 +261,18 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
+            /// Construct the rectangle from position and size
+            /// </summary>
+            /// <param name="position">Position of the top-left corner of the rectangle</param>
+            /// <param name="size">Size of the rectangle</param>
+            ////////////////////////////////////////////////////////////
+            public FloatRect(Vector2f position, Vector2f size)
+                : this(position.X, position.Y, size.X, size.Y)
+            {
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
             /// Check if a point is inside the rectangle's area
             /// </summary>
             /// <param name="x">X coordinate of the point to test</param>
@@ -160,7 +281,12 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Contains(float x, float y)
             {
-                return (x >= Left) && (x < Left + Width) && (y >= Top) && (y < Top + Height);
+                float minX = Math.Min(Left, Left + Width);
+                float maxX = Math.Max(Left, Left + Width);
+                float minY = Math.Min(Top, Top + Height);
+                float maxY = Math.Max(Top, Top + Height);
+
+                return (x >= minX) && (x < maxX) && (y >= minY) && (y < maxY);
             }
 
             ////////////////////////////////////////////////////////////
@@ -172,13 +298,8 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Intersects(FloatRect rect)
             {
-                // Compute the intersection boundaries
-                float left   = Math.Max(Left,         rect.Left);
-                float top    = Math.Max(Top,          rect.Top);
-                float right  = Math.Min(Left + Width, rect.Left + rect.Width);
-                float bottom = Math.Min(Top + Height, rect.Top + rect.Height);
-            
-                return (left < right) && (top < bottom);
+                FloatRect overlap;
+                return Intersects(rect, out overlap);
             }
 
             ////////////////////////////////////////////////////////////
@@ -191,19 +312,33 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public bool Intersects(FloatRect rect, out FloatRect overlap)
             {
+                // Rectangles with negative dimensions are allowed, so we must handle them correctly
+
+                // Compute the min and max of the first rectangle on both axes
+                float r1MinX = Math.Min(Left, Left + Width);
+                float r1MaxX = Math.Max(Left, Left + Width);
+                float r1MinY = Math.Min(Top, Top + Height);
+                float r1MaxY = Math.Max(Top, Top + Height);
+
+                // Compute the min and max of the second rectangle on both axes
+                float r2MinX = Math.Min(rect.Left, rect.Left + rect.Width);
+                float r2MaxX = Math.Max(rect.Left, rect.Left + rect.Width);
+                float r2MinY = Math.Min(rect.Top, rect.Top + rect.Height);
+                float r2MaxY = Math.Max(rect.Top, rect.Top + rect.Height);
+
                 // Compute the intersection boundaries
-                float left   = Math.Max(Left,         rect.Left);
-                float top    = Math.Max(Top,          rect.Top);
-                float right  = Math.Min(Left + Width, rect.Left + rect.Width);
-                float bottom = Math.Min(Top + Height, rect.Top + rect.Height);
+                float interLeft = Math.Max(r1MinX, r2MinX);
+                float interTop = Math.Max(r1MinY, r2MinY);
+                float interRight = Math.Min(r1MaxX, r2MaxX);
+                float interBottom = Math.Min(r1MaxY, r2MaxY);
 
                 // If the intersection is valid (positive non zero area), then there is an intersection
-                if ((left < right) && (top < bottom))
+                if ((interLeft < interRight) && (interTop < interBottom))
                 {
-                    overlap.Left   = left;
-                    overlap.Top    = top;
-                    overlap.Width  = right - left;
-                    overlap.Height = bottom - top;
+                    overlap.Left   = interLeft;
+                    overlap.Top    = interTop;
+                    overlap.Width  = interRight - interLeft;
+                    overlap.Height = interBottom - interTop;
                     return true;
                 }
                 else
@@ -229,6 +364,88 @@ namespace SFML
                        " Top(" + Top + ")" +
                        " Width(" + Width + ")" +
                        " Height(" + Height + ")";
+            }
+			
+			////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare rectangle and object and checks if they are equal
+            /// </summary>
+            /// <param name="obj">Object to check</param>
+            /// <returns>Object and rectangle are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool Equals(object obj)
+            {
+                return (obj is FloatRect) && obj.Equals(this);
+            }
+            
+            ///////////////////////////////////////////////////////////
+            /// <summary>
+            /// Compare two rectangles and checks if they are equal
+            /// </summary>
+            /// <param name="other">Rectangle to check</param>
+            /// <returns>Rectangles are equal</returns>
+            ////////////////////////////////////////////////////////////
+            public bool Equals(FloatRect other)
+            {
+                return (Left == other.Left) &&
+                       (Top == other.Top) &&
+                       (Width == other.Width) &&
+                       (Height == other.Height);
+            }
+            
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Provide a integer describing the object
+            /// </summary>
+            /// <returns>Integer description of the object</returns>
+            ////////////////////////////////////////////////////////////
+            public override int GetHashCode()
+            {
+                return unchecked((int)((uint)Left ^
+                       (((uint)Top << 13) | ((uint)Top >> 19)) ^
+                       (((uint)Width << 26) | ((uint)Width >>  6)) ^
+                       (((uint)Height <<  7) | ((uint)Height >> 25))));
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Operator == overload ; check rect equality
+            /// </summary>
+            /// <param name="r1">First rect</param>
+            /// <param name="r2">Second rect</param>
+            /// <returns>r1 == r2</returns>
+            ////////////////////////////////////////////////////////////
+            public static bool operator ==(FloatRect r1, FloatRect r2)
+            {
+                return r1.Equals(r2);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Operator != overload ; check rect inequality
+            /// </summary>
+            /// <param name="r1">First rect</param>
+            /// <param name="r2">Second rect</param>
+            /// <returns>r1 != r2</returns>
+            ////////////////////////////////////////////////////////////
+            public static bool operator !=(FloatRect r1, FloatRect r2)
+            {
+                return !r1.Equals(r2);
+            }
+			
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Explicit casting to another rectangle type
+            /// </summary>
+            /// <param name="r">Rectangle being casted</param>
+            /// <returns>Casting result</returns>
+            ////////////////////////////////////////////////////////////
+            public static explicit operator IntRect(FloatRect r)
+            {
+                return new IntRect((int)r.Left,
+                                   (int)r.Top,
+                                   (int)r.Width,
+                                   (int)r.Height);
             }
 
             /// <summary>Left coordinate of the rectangle</summary>

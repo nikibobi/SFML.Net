@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using SFML.System;
 
 namespace SFML
 {
@@ -11,7 +12,7 @@ namespace SFML
         /// Give access to the real-time state of the mouse
         /// </summary>
         ////////////////////////////////////////////////////////////
-        public class Mouse
+        public static class Mouse
         {
             ////////////////////////////////////////////////////////////
             /// <summary>

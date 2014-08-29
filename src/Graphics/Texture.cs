@@ -4,6 +4,7 @@ using System.Security;
 using System.IO;
 using System.Runtime.ConstrainedExecution;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -113,6 +114,30 @@ namespace SFML
             public Texture(Image image, IntRect area) :
                 base(sfTexture_createFromImage(image.CPointer, ref area))
             {
+                if (CPointer == IntPtr.Zero)
+                    throw new LoadingFailedException("texture");
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Construct the texture from a file in memory
+            /// </summary>
+            /// <param name="bytes">Byte array containing the file contents</param>
+            /// <exception cref="LoadingFailedException" />
+            ////////////////////////////////////////////////////////////
+            public Texture(byte[] bytes) : 
+                base(IntPtr.Zero)
+            {
+                GCHandle pin = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                try 
+                {
+                    IntRect rect = new IntRect(0, 0, 0, 0);
+                    SetThis(sfTexture_createFromMemory(pin.AddrOfPinnedObject(), Convert.ToUInt64(bytes.Length), ref rect));
+                } 
+                finally 
+                {
+                    pin.Free();
+                }
                 if (CPointer == IntPtr.Zero)
                     throw new LoadingFailedException("texture");
             }
@@ -357,6 +382,9 @@ namespace SFML
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern IntPtr sfTexture_createFromImage(IntPtr image, ref IntRect area);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern IntPtr sfTexture_createFromMemory(IntPtr data, ulong size, ref IntRect area);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern IntPtr sfTexture_copy(IntPtr texture);

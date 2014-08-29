@@ -1,7 +1,9 @@
 using System;
+using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Security;
+using SFML.System;
 
 namespace SFML
 {
@@ -77,9 +79,19 @@ namespace SFML
             /// <param name="settings">Creation parameters</param>
             ////////////////////////////////////////////////////////////
             public Window(VideoMode mode, string title, Styles style, ContextSettings settings) :
-                base(sfWindow_create(mode, title, style, ref settings))
+                base(IntPtr.Zero)
             {
-            }
+                 // Copy the title to a null-terminated UTF-32 byte array
+                byte[] titleAsUtf32 = Encoding.UTF32.GetBytes(title + '\0');
+
+                unsafe
+                {
+                    fixed (byte* titlePtr = titleAsUtf32)
+                    {
+                        SetThis(sfWindow_createUnicode(mode, (IntPtr)titlePtr, style, ref settings));
+                    }
+                }
+           }
 
             ////////////////////////////////////////////////////////////
             /// <summary>
@@ -112,9 +124,9 @@ namespace SFML
             /// </summary>
             /// <returns>True if the window is opened</returns>
             ////////////////////////////////////////////////////////////
-            public virtual bool IsOpen()
+            public virtual bool IsOpen
             {
-                return sfWindow_isOpen(CPointer);
+                get { return sfWindow_isOpen(CPointer); }
             }
 
             ////////////////////////////////////////////////////////////
@@ -179,7 +191,16 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public virtual void SetTitle(string title)
             {
-                sfWindow_setTitle(CPointer, title);
+                 // Copy the title to a null-terminated UTF-32 byte array
+                byte[] titleAsUtf32 = Encoding.UTF32.GetBytes(title + '\0');
+
+                unsafe
+                {
+                    fixed (byte* titlePtr = titleAsUtf32)
+                    {
+                        sfWindow_setUnicodeTitle(CPointer, (IntPtr)titlePtr);
+                    }
+                }
             }
 
             ////////////////////////////////////////////////////////////
@@ -383,12 +404,12 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Internal function to get the mouse position relatively to the window.
-            /// This function is public because it is called by another class of
+            /// This function is protected because it is called by another class of
             /// another module, it is not meant to be called by users.
             /// </summary>
             /// <returns>Relative mouse position</returns>
             ////////////////////////////////////////////////////////////
-            public virtual Vector2i InternalGetMousePosition()
+            protected internal virtual Vector2i InternalGetMousePosition()
             {
                 return sfMouse_getPosition(CPointer);
             }
@@ -396,12 +417,12 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Internal function to set the mouse position relatively to the window.
-            /// This function is public because it is called by another class of
+            /// This function is protected because it is called by another class of
             /// another module, it is not meant to be called by users.
             /// </summary>
             /// <param name="position">Relative mouse position</param>
             ////////////////////////////////////////////////////////////
-            public virtual void InternalSetMousePosition(Vector2i position)
+            protected internal virtual void InternalSetMousePosition(Vector2i position)
             {
                 sfMouse_setPosition(position, CPointer);
             }
@@ -578,6 +599,9 @@ namespace SFML
             static extern IntPtr sfWindow_create(VideoMode Mode, string Title, Styles Style, ref ContextSettings Params);
 
             [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern IntPtr sfWindow_createUnicode(VideoMode Mode, IntPtr Title, Styles Style, ref ContextSettings Params);
+
+            [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern IntPtr sfWindow_createFromHandle(IntPtr Handle, ref ContextSettings Params);
 
             [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
@@ -615,6 +639,9 @@ namespace SFML
 
             [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern void sfWindow_setTitle(IntPtr CPointer, string title);
+
+            [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern void sfWindow_setUnicodeTitle(IntPtr CPointer, IntPtr title);
 
             [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             unsafe static extern void sfWindow_setIcon(IntPtr CPointer, uint Width, uint Height, byte* Pixels);

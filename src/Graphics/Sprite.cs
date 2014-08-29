@@ -12,6 +12,9 @@ namespace SFML
         /// This class defines a sprite : texture, transformations,
         /// color, and draw on screen
         /// </summary>
+        /// <remarks>
+        /// See also the note on coordinates and undistorted rendering in SFML.Graphics.Transformable.
+        /// </remarks>
         ////////////////////////////////////////////////////////////
         public class Sprite : Transformable, Drawable
         {
@@ -153,11 +156,7 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summmary>
-            /// Draw the object to a render target
-            ///
-            /// This is a pure virtual function that has to be implemented
-            /// by the derived class to define how the drawable should be
-            /// drawn.
+            /// Draw the sprite to a render target
             /// </summmary>
             /// <param name="target">Render target to draw to</param>
             /// <param name="states">Current render states</param>

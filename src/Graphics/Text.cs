@@ -1,7 +1,9 @@
 using System;
 using System.Security;
 using System.Runtime.InteropServices;
+using System.Text;
 using SFML.Window;
+using SFML.System;
 
 namespace SFML
 {
@@ -11,6 +13,9 @@ namespace SFML
         /// <summary>
         /// This class defines a graphical 2D text, that can be drawn on screen
         /// </summary>
+        /// <remarks>
+        /// See also the note on coordinates and undistorted rendering in SFML.Graphics.Transformable.
+        /// </remarks>
         ////////////////////////////////////////////////////////////
         public class Text : Transformable, Drawable
         {
@@ -110,29 +115,38 @@ namespace SFML
             {
                 get
                 {
-                    // Get the number of characters
-                    // This is probably not the most optimized way; if anyone has a better solution...
-                    int length = Marshal.PtrToStringAnsi(sfText_getString(CPointer)).Length;
+                    // Get a pointer to the source string (UTF-32)
+                    IntPtr source = sfText_getUnicodeString(CPointer);
 
-                    // Copy the characters
-                    byte[] characters = new byte[length * 4];
-                    Marshal.Copy(sfText_getUnicodeString(CPointer), characters, 0, characters.Length);
+                    // Find its length (find the terminating 0)
+                    uint length = 0;
+                    unsafe
+                    {
+                        for (uint* ptr = (uint*)source.ToPointer(); *ptr != 0; ++ptr)
+                            length++;
+                    }
 
-                    // Convert from UTF-32 to String (UTF-16)
-                    return System.Text.Encoding.UTF32.GetString(characters);
+                    // Copy it to a byte array
+                    byte[] sourceBytes = new byte[length * 4];
+                    Marshal.Copy(source, sourceBytes, 0, sourceBytes.Length);
+
+                    // Convert it to a C# string
+                    return Encoding.UTF32.GetString(sourceBytes);
                 }
 
                 set
                 {
-                    // Convert from String (UTF-16) to UTF-32
-                    int[] characters = new int[value.Length];
-                    for (int i = 0; i < value.Length; ++i)
-                        characters[i] = Char.ConvertToUtf32(value, i);
+                    // Copy the string to a null-terminated UTF-32 byte array
+                    byte[] utf32 = Encoding.UTF32.GetBytes(value + '\0');
 
-                    // Transform to raw and pass to the C API
-                    GCHandle handle = GCHandle.Alloc(characters, GCHandleType.Pinned);
-                    sfText_setUnicodeString(CPointer, handle.AddrOfPinnedObject());
-                    handle.Free();
+                    // Pass it to the C API
+                    unsafe
+                    {
+                        fixed (byte* ptr = utf32)
+                        {
+                            sfText_setUnicodeString(CPointer, (IntPtr)ptr);
+                        }
+                    }
                 }
             }
 
@@ -237,11 +251,7 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summmary>
-            /// Draw the object to a render target
-            ///
-            /// This is a pure virtual function that has to be implemented
-            /// by the derived class to define how the drawable should be
-            /// drawn.
+            /// Draw the text to a render target
             /// </summmary>
             /// <param name="target">Render target to draw to</param>
             /// <param name="states">Current render states</param>
