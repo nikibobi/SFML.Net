@@ -340,7 +340,7 @@ namespace SFML
             /// coordinates, using the current view
             ///
             /// This function is an overload of the MapPixelToCoords
-            /// function that implicitely uses the current view.
+            /// function that implicitly uses the current view.
             /// It is equivalent to:
             /// target.MapPixelToCoords(point, target.GetView());
             /// </summary>
@@ -389,7 +389,7 @@ namespace SFML
             /// coordinates, using the current view
             ///
             /// This function is an overload of the mapCoordsToPixel
-            /// function that implicitely uses the current view.
+            /// function that implicitly uses the current view.
             /// It is equivalent to:
             /// target.MapCoordsToPixel(point, target.GetView());
             /// </summary>
@@ -620,6 +620,28 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
+            /// Request the current window to be made the active
+            /// foreground window
+            /// </summary>
+            ////////////////////////////////////////////////////////////
+            public override void RequestFocus()
+            {
+                sfRenderWindow_requestFocus(CPointer);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Check whether the window has the input focus
+            /// </summary>
+            /// <returns>True if the window has focus, false otherwise</returns>
+            ////////////////////////////////////////////////////////////
+            public override bool HasFocus()
+            {
+                return sfRenderWindow_hasFocus(CPointer);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
             /// Provide a string describing the object
             /// </summary>
             /// <returns>String description of the object</returns>
@@ -660,7 +682,7 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
-            /// Internal function to get the mouse position relatively to the window.
+            /// Internal function to get the mouse position relative to the window.
             /// This function is public because it is called by another class,
             /// it is not meant to be called by users.
             /// </summary>
@@ -673,7 +695,7 @@ namespace SFML
 
             ////////////////////////////////////////////////////////////
             /// <summary>
-            /// Internal function to set the mouse position relatively to the window.
+            /// Internal function to set the mouse position relative to the window.
             /// This function is public because it is called by another class,
             /// it is not meant to be called by users.
             /// </summary>
@@ -682,6 +704,20 @@ namespace SFML
             protected override void InternalSetMousePosition(Vector2i position)
             {
                 sfMouse_setPositionRenderWindow(position, CPointer);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Internal function to get the touch position relative to the window.
+            /// This function is protected because it is called by another class of
+            /// another module, it is not meant to be called by users.
+            /// </summary>
+            /// <param name="Finger">Finger index</param>
+            /// <returns>Relative touch position</returns>
+            ////////////////////////////////////////////////////////////
+            protected override Vector2i InternalGetTouchPosition(uint Finger)
+            {
+                return sfTouch_getPositionRenderWindow(Finger, CPointer);
             }
 
             ////////////////////////////////////////////////////////////
@@ -833,11 +869,19 @@ namespace SFML
             static extern IntPtr sfRenderWindow_capture(IntPtr CPointer);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern void sfRenderWindow_requestFocus(IntPtr CPointer);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern bool sfRenderWindow_hasFocus(IntPtr CPointer);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern Vector2i sfMouse_getPositionRenderWindow(IntPtr CPointer);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern void sfMouse_setPositionRenderWindow(Vector2i position, IntPtr CPointer);
 
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern Vector2i sfTouch_getPositionRenderWindow(uint Finger, IntPtr RelativeTo);
             #endregion
         }
     }

@@ -142,7 +142,7 @@ namespace SFML
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
             }
-			
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Compare vector and object and checks if they are equal
@@ -152,9 +152,9 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public override bool Equals(object obj)
             {
-                return (obj is Vector2f) && obj.Equals(this);
+                return (obj is Vector2f) && Equals((Vector2f)obj);
             }
-            
+
             ///////////////////////////////////////////////////////////
             /// <summary>
             /// Compare two vectors and checks if they are equal
@@ -167,7 +167,7 @@ namespace SFML
                 return (X == other.X) &&
                        (Y == other.Y);
             }
-            
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Provide a integer describing the object
@@ -206,7 +206,7 @@ namespace SFML
 
             /// <summary>X (horizontal) component of the vector</summary>
             public float X;
- 
+
             /// <summary>Y (vertical) component of the vector</summary>
             public float Y;
         }
@@ -348,7 +348,7 @@ namespace SFML
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
             }
-			
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Compare vector and object and checks if they are equal
@@ -358,9 +358,9 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public override bool Equals(object obj)
             {
-                return (obj is Vector2i) && obj.Equals(this);
+                return (obj is Vector2i) && Equals((Vector2i)obj);
             }
-            
+
             ///////////////////////////////////////////////////////////
             /// <summary>
             /// Compare two vectors and checks if they are equal
@@ -373,7 +373,7 @@ namespace SFML
                 return (X == other.X) &&
                        (Y == other.Y);
             }
-            
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Provide a integer describing the object
@@ -412,7 +412,7 @@ namespace SFML
 
             /// <summary>X (horizontal) component of the vector</summary>
             public int X;
- 
+
             /// <summary>Y (vertical) component of the vector</summary>
             public int Y;
         }
@@ -542,7 +542,7 @@ namespace SFML
                        " X(" + X + ")" +
                        " Y(" + Y + ")";
             }
-			
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Compare vector and object and checks if they are equal
@@ -552,9 +552,9 @@ namespace SFML
             ////////////////////////////////////////////////////////////
             public override bool Equals(object obj)
             {
-                return (obj is Vector2u) && obj.Equals(this);
+                return (obj is Vector2u) && Equals((Vector2u)obj);
             }
-            
+
             ///////////////////////////////////////////////////////////
             /// <summary>
             /// Compare two vectors and checks if they are equal
@@ -567,7 +567,7 @@ namespace SFML
                 return (X == other.X) &&
                        (Y == other.Y);
             }
-            
+
             ////////////////////////////////////////////////////////////
             /// <summary>
             /// Provide a integer describing the object

@@ -106,7 +106,7 @@ namespace SFML
             /// <param name="characterSize">Character size</param>
             /// <returns>Kerning offset, in pixels</returns>
             ////////////////////////////////////////////////////////////
-            public int GetKerning(uint first, uint second, uint characterSize)
+            public float GetKerning(uint first, uint second, uint characterSize)
             {
                 return sfFont_getKerning(CPointer, first, second, characterSize);
             }
@@ -118,9 +118,33 @@ namespace SFML
             /// <param name="characterSize">Character size</param>
             /// <returns>Line spacing, in pixels</returns>
             ////////////////////////////////////////////////////////////
-            public int GetLineSpacing(uint characterSize)
+            public float GetLineSpacing(uint characterSize)
             {
                 return sfFont_getLineSpacing(CPointer, characterSize);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Get the position of the underline
+            /// </summary>
+            /// <param name="characterSize">Character size</param>
+            /// <returns>Underline position, in pixels</returns>
+            ////////////////////////////////////////////////////////////
+            public float GetUnderlinePosition(uint characterSize)
+            {
+                return sfFont_getUnderlinePosition(CPointer, characterSize);
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Get the thickness of the underline
+            /// </summary>
+            /// <param name="characterSize">Character size</param>
+            /// <returns>Underline thickness, in pixels</returns>
+            ////////////////////////////////////////////////////////////
+            public float GetUnderlineThickness(uint characterSize)
+            {
+                return sfFont_getUnderlineThickness(CPointer, characterSize);
             }
 
             ////////////////////////////////////////////////////////////
@@ -134,6 +158,22 @@ namespace SFML
             {
                 myTextures[characterSize] = new Texture(sfFont_getTexture(CPointer, characterSize));
                 return myTextures[characterSize];
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Get the font information
+            /// </summary>
+            /// <returns>A structure that holds the font information</returns>
+            ////////////////////////////////////////////////////////////
+            public Info GetInfo()
+            {
+                InfoMarshalData data = sfFont_getInfo(CPointer);
+                Info info = new Info();
+
+                info.Family = Marshal.PtrToStringAnsi(data.Family);
+
+                return info;
             }
 
             ////////////////////////////////////////////////////////////
@@ -184,6 +224,29 @@ namespace SFML
             {
             }
 
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Info holds various information about a font
+            /// </summary>
+            ////////////////////////////////////////////////////////////
+            public struct Info
+            {
+                /// <summary>The font family</summary>
+                public string Family;
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Internal struct used for marshaling the font info
+            /// struct from unmanaged code.
+            /// </summary>
+            ////////////////////////////////////////////////////////////
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct InfoMarshalData
+            {
+                public IntPtr Family;
+            }
+
             private Dictionary<uint, Texture> myTextures = new Dictionary<uint, Texture>();
             private StreamAdaptor myStream = null;
 
@@ -207,13 +270,22 @@ namespace SFML
             static extern Glyph sfFont_getGlyph(IntPtr CPointer, uint codePoint, uint characterSize, bool bold);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-            static extern int sfFont_getKerning(IntPtr CPointer, uint first, uint second, uint characterSize);
+            static extern float sfFont_getKerning(IntPtr CPointer, uint first, uint second, uint characterSize);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-            static extern int sfFont_getLineSpacing(IntPtr CPointer, uint characterSize);
+            static extern float sfFont_getLineSpacing(IntPtr CPointer, uint characterSize);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern float sfFont_getUnderlinePosition(IntPtr CPointer, uint characterSize);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern float sfFont_getUnderlineThickness(IntPtr CPointer, uint characterSize);
 
             [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern IntPtr sfFont_getTexture(IntPtr CPointer, uint characterSize);
+
+            [DllImport("csfml-graphics-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern InfoMarshalData sfFont_getInfo(IntPtr CPointer);
             #endregion
         }
     }

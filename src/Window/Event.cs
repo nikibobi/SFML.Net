@@ -33,8 +33,12 @@ namespace SFML
             /// <summary>Event triggered when a keyboard key is released</summary>
             KeyReleased,
 
-            /// <summary>Event triggered when the mouse wheel is scrolled</summary>
+            /// <summary>Event triggered when the mouse wheel is scrolled (deprecated)</summary>
+            [Obsolete("MouseWheelMoved is deprecated, please use MouseWheelScrolled instead")]
             MouseWheelMoved,
+
+            /// <summary>Event triggered when a mouse wheel is scrolled</summary>
+            MouseWheelScrolled,
 
             /// <summary>Event triggered when a mouse button is pressed</summary>
             MouseButtonPressed,
@@ -64,7 +68,19 @@ namespace SFML
             JoystickConnected,
 
             /// <summary>Event triggered when a joystick is disconnected</summary>
-            JoystickDisconnected
+            JoystickDisconnected,
+
+            /// <summary>Event triggered when a touch begins</summary>
+            TouchBegan,
+
+            /// <summary>Event triggered when a touch is moved</summary>
+            TouchMoved,
+
+            /// <summary>Event triggered when a touch is ended</summary>
+            TouchEnded,
+
+            /// <summary>Event triggered when a sensor is changed</summary>
+            SensorChanged
         }
 
         ////////////////////////////////////////////////////////////
@@ -138,14 +154,36 @@ namespace SFML
 
         ////////////////////////////////////////////////////////////
         /// <summary>
-        /// Mouse wheel event parameters
+        /// Mouse wheel move event parameters
         /// </summary>
         ////////////////////////////////////////////////////////////
         [StructLayout(LayoutKind.Sequential)]
+        [Obsolete("MouseWheelEvent is deprecated, please use MouseWheelScrollEvent instead")]
         public struct MouseWheelEvent
         {
             /// <summary>Scroll amount</summary>
             public int Delta;
+
+            /// <summary>X coordinate of the mouse cursor</summary>
+            public int X;
+
+            /// <summary>Y coordinate of the mouse cursor</summary>
+            public int Y;
+        }
+
+        ////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Mouse wheel scroll event parameters
+        /// </summary>
+        ////////////////////////////////////////////////////////////
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MouseWheelScrollEvent
+        {
+            /// <summary>Mouse Wheel which triggered the event</summary>
+            public Mouse.Wheel Wheel;
+
+            /// <summary>Scroll amount</summary>
+            public float Delta;
 
             /// <summary>X coordinate of the mouse cursor</summary>
             public int X;
@@ -216,6 +254,45 @@ namespace SFML
 
         ////////////////////////////////////////////////////////////
         /// <summary>
+        /// Touch event parameters
+        /// </summary>
+        ////////////////////////////////////////////////////////////
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TouchEvent
+        {
+            /// <summary>Index of the finger in case of multi-touch events</summary>
+            public uint Finger;
+
+            /// <summary>X position of the touch, relative to the left of the owner window</summary>
+            public int X;
+
+            /// <summary>Y position of the touch, relative to the top of the owner window</summary>
+            public int Y;
+        }
+
+        ////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Sensor event parameters
+        /// </summary>
+        ////////////////////////////////////////////////////////////
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SensorEvent
+        {
+            /// <summary>Type of the sensor</summary>
+            public Sensor.Type Type;
+
+            /// <summary>Current value of the sensor on X axis</summary>
+            public float X;
+
+            /// <summary>Current value of the sensor on Y axis</summary>
+            public float Y;
+
+            /// <summary>Current value of the sensor on Z axis</summary>
+            public float Z;
+        }
+
+        ////////////////////////////////////////////////////////////
+        /// <summary>
         /// Event defines a system event and its parameters
         /// </summary>
         ////////////////////////////////////////////////////////////
@@ -248,7 +325,12 @@ namespace SFML
 
             /// <summary>Arguments for mouse wheel events (MouseWheelMoved)</summary>
             [FieldOffset(4)]
+            [Obsolete("MouseWheel is deprecated, please use MouseWheelScroll instead")]
             public MouseWheelEvent MouseWheel;
+
+            /// <summary>Arguments for mouse wheel scroll events (MouseWheelScrolled)</summary>
+            [FieldOffset(4)]
+            public MouseWheelScrollEvent MouseWheelScroll;
 
             /// <summary>Arguments for joystick axis events (JoystickMoved)</summary>
             [FieldOffset(4)]
@@ -261,6 +343,14 @@ namespace SFML
             /// <summary>Arguments for joystick connect events (JoystickConnected, JoystickDisconnected)</summary>
             [FieldOffset(4)]
             public JoystickConnectEvent JoystickConnect;
+
+            /// <summary>Arguments for touch events (TouchBegan, TouchMoved, TouchEnded)</summary>
+            [FieldOffset(4)]
+            public TouchEvent Touch;
+
+            /// <summary>Arguments for sensor events (SensorChanged)</summary>
+            [FieldOffset(4)]
+            public SensorEvent Sensor;
         }
     }
 }

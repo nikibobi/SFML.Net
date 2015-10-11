@@ -126,13 +126,63 @@ namespace SFML
             /// Update the states of all joysticks
             /// </summary>
             /// This function is used internally by SFML, so you normally
-            /// don't have to call it explicitely. However, you may need to
+            /// don't have to call it explicitly. However, you may need to
             /// call it if you have no window yet (or no window at all):
             /// in this case the joysticks states are not updated automatically.
             ////////////////////////////////////////////////////////////
             public static void Update()
             {
                 sfJoystick_update();
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Get the joystick information
+            /// </summary>
+            /// <param name="joystick">Index of the joystick</param>
+            /// <returns>Structure containing joystick information</returns>
+            ////////////////////////////////////////////////////////////
+            public static Identification GetIdentification(uint joystick)
+            {
+                IdentificationMarshalData identification = sfJoystick_getIdentification(joystick);
+                Identification retIdentification = new Identification();
+
+                retIdentification.Name      = Marshal.PtrToStringAnsi(identification.Name);
+                retIdentification.VendorId  = identification.VendorId;
+                retIdentification.ProductId = identification.ProductId;
+
+                return retIdentification;
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Identification holds a joystick's identification
+            /// </summary>
+            ////////////////////////////////////////////////////////////
+            public struct Identification
+            {
+                /// <summary>Name of the joystick</summary>
+                public string Name;
+
+                /// <summary>Manufacturer identifier</summary>
+                public uint VendorId;
+
+                /// <summary>Product identifier</summary>
+                public uint ProductId;
+            }
+
+            ////////////////////////////////////////////////////////////
+            /// <summary>
+            /// Internal struct used for marshaling the joystick
+            /// identification struct from unmanaged code.
+            /// </summary>
+            ////////////////////////////////////////////////////////////
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct IdentificationMarshalData
+            {
+                public IntPtr Name;
+                public uint VendorId;
+                public uint ProductId;
             }
 
             #region Imports
@@ -153,6 +203,9 @@ namespace SFML
 
             [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
             static extern void sfJoystick_update();
+
+            [DllImport("csfml-window-2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+            static extern IdentificationMarshalData sfJoystick_getIdentification(uint joystick);
             #endregion
         }
     }
